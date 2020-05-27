@@ -162,6 +162,15 @@
 			<artifactId>lwjgl-stb</artifactId>
 			<classifier>${lwjgl.natives}</classifier>
 		</dependency>
+		<!--
+		<dependency>
+			<groupId>slick-util</groupId>
+			<artifactId>slick-util</artifactId>
+			<version>1.0.0</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/src/main/resources/libs/slick-util3.jar</systemPath>
+		</dependency>
+		-->
 	</dependencies>
 
 	<build>
