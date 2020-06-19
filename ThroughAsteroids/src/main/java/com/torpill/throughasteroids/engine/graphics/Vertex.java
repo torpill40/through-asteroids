@@ -5,19 +5,13 @@ import com.torpill.throughasteroids.engine.maths.Vector3f;
 
 public class Vertex {
 
-	private final Vector3f position, color;
+	private final Vector3f position;
 	private final Vector2f textureCoord;
 
-	public Vertex(final Vector3f position, final Vector3f color, final Vector2f textureCoord) {
+	public Vertex(final Vector3f position, final Vector2f textureCoord) {
 
 		this.position = position;
 		this.textureCoord = textureCoord;
-		this.color = color;
-	}
-
-	public Vector3f getColor() {
-
-		return this.color;
 	}
 
 	public Vector3f getPosition() {

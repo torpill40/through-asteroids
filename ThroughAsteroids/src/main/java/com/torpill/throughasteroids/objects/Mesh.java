@@ -1,4 +1,4 @@
-package com.torpill.throughasteroids.engine.graphics;
+package com.torpill.throughasteroids.objects;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -9,14 +9,17 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 
-public class Mesh {
+import com.torpill.throughasteroids.engine.graphics.Vertex;
+import com.torpill.throughasteroids.engine.graphics.materials.IMaterial;
+
+public class Mesh implements Cloneable {
 
 	private final Vertex[] vertices;
 	private final int[] indices;
-	private final Material material;
+	protected final IMaterial material;
 	private int vao, pbo, ibo, cbo, tbo;
 
-	public Mesh(final Vertex[] vertices, final int[] indices, final Material material) {
+	public Mesh(final Vertex[] vertices, final int[] indices, final IMaterial material) {
 
 		this.vertices = vertices;
 		this.indices = indices;
@@ -41,18 +44,6 @@ public class Mesh {
 		positionBuffer.put(positionData).flip();
 
 		this.pbo = this.storeData(positionBuffer, 0, 3);
-
-		final FloatBuffer colorBuffer = MemoryUtil.memAllocFloat(this.vertices.length * 3);
-		final float[] colorData = new float[this.vertices.length * 3];
-		for (int i = 0; i < this.vertices.length; i++) {
-
-			colorData[i * 3] = this.vertices[i].getColor().getX();
-			colorData[i * 3 + 1] = this.vertices[i].getColor().getY();
-			colorData[i * 3 + 2] = this.vertices[i].getColor().getZ();
-		}
-		colorBuffer.put(colorData).flip();
-
-		this.cbo = this.storeData(colorBuffer, 1, 3);
 
 		final FloatBuffer textureBuffer = MemoryUtil.memAllocFloat(this.vertices.length * 2);
 		final float[] textureData = new float[this.vertices.length * 2];
@@ -101,7 +92,7 @@ public class Mesh {
 		return this.indices;
 	}
 
-	public Material getMaterial() {
+	public IMaterial getMaterial() {
 
 		return this.material;
 	}
@@ -134,5 +125,13 @@ public class Mesh {
 		GL20.glVertexAttribPointer(index, size, GL11.GL_FLOAT, false, 0, 0);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 		return bufferID;
+	}
+
+	@Override
+	public Mesh clone() {
+
+		final Mesh mesh = new Mesh(this.vertices, this.indices, this.material.clone());
+		mesh.create();
+		return mesh;
 	}
 }

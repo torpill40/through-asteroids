@@ -1,4 +1,4 @@
-package com.torpill.throughasteroids.engine.graphics;
+package com.torpill.throughasteroids.engine.graphics.materials;
 
 public class Texture {
 

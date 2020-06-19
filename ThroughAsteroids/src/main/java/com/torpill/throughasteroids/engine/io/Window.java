@@ -21,7 +21,6 @@ public class Window {
 	private Vector3f background = new Vector3f(0.0F, 0.0F, 0.0F);
 	private GLFWWindowSizeCallback sizeCallback;
 	private boolean isResized;
-	private boolean isFullscreen;
 	private final int[] windowPosX = new int[1], windowPosY = new int[1];
 	private final Matrix4f projection;
 
@@ -30,7 +29,7 @@ public class Window {
 		this.width = width;
 		this.height = height;
 		this.title = title;
-		this.projection = Matrix4f.projection(70.0F, (float) width / (float) height, 0.1F, 1000.0F);
+		this.projection = Matrix4f.projection(60.0F, (float) width / (float) height, 0.1F, 1000.0F);
 	}
 
 	public void create() {
@@ -42,7 +41,7 @@ public class Window {
 		}
 
 		this.input = new Input();
-		this.window = GLFW.glfwCreateWindow(this.width, this.height, this.title, this.isFullscreen ? GLFW.glfwGetPrimaryMonitor() : 0, 0);
+		this.window = GLFW.glfwCreateWindow(this.width, this.height, this.title, 0, 0);
 
 		if (this.window == 0) {
 
@@ -95,6 +94,11 @@ public class Window {
 		GLFW.glfwDestroyWindow(this.window);
 	}
 
+	public Vector3f getBackground() {
+
+		return this.background;
+	}
+
 	public int getHeight() {
 
 		return this.height;
@@ -120,9 +124,9 @@ public class Window {
 		return this.window;
 	}
 
-	public boolean isFullscreen() {
+	public void mouseState(final boolean lock) {
 
-		return this.isFullscreen;
+		GLFW.glfwSetInputMode(this.window, GLFW.GLFW_CURSOR, lock ? GLFW.GLFW_CURSOR_DISABLED : GLFW.GLFW_CURSOR_NORMAL);
 	}
 
 	public void setBackgroundColor(final float r, final float g, final float b) {
@@ -133,21 +137,6 @@ public class Window {
 	public void setBackgroundColor(final int r, final int g, final int b) {
 
 		this.background = new Vector3f(r / 255.0F, g / 255.0F, b / 255.0F);
-	}
-
-	public void setFullscreen(final boolean isFullscreen) {
-
-		this.isFullscreen = isFullscreen;
-		this.isResized = true;
-		if (this.isFullscreen) {
-
-			GLFW.glfwGetWindowPos(this.window, this.windowPosX, this.windowPosY);
-			GLFW.glfwSetWindowMonitor(this.window, GLFW.glfwGetPrimaryMonitor(), 0, 0, this.width, this.height, 0);
-
-		} else {
-
-			GLFW.glfwSetWindowMonitor(this.window, 0, this.windowPosX[0], this.windowPosY[0], this.width, this.height, 0);
-		}
 	}
 
 	public boolean shouldClose() {
@@ -165,6 +154,7 @@ public class Window {
 		if (this.isResized) {
 
 			GL11.glViewport(0, 0, this.width, this.height);
+			this.projection.set(Matrix4f.projection(60.0F, (float) this.width / (float) this.height, 0.1F, 1000.0F));
 			this.isResized = false;
 		}
 		GL11.glClearColor(this.background.getX(), this.background.getY(), this.background.getZ(), 1.0F);

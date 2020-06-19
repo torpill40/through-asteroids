@@ -1,4 +1,4 @@
-package com.torpill.throughasteroids.engine.graphics;
+package com.torpill.throughasteroids.engine.graphics.materials;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
@@ -17,27 +17,43 @@ import com.torpill.throughasteroids.App;
 public class TextureLoader {
 
 	private static final int BYTES_PER_PIXEL = 4;
+	public static int WIDTH = 16, HEIGHT = 16;
+
+	public static BufferedImage loadDefaultImage() {
+
+		final BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+		final int[] pixels = ((DataBufferInt) img.getRaster().getDataBuffer()).getData();
+		for (int i = 0; i < WIDTH; i++) {
+
+			for (int j = 0; j < HEIGHT; j++) {
+
+				if (i >= WIDTH / 2 ^ j < HEIGHT / 2) {
+
+					pixels[i + j * WIDTH] = (255 << 16) + 255;
+				}
+			}
+		}
+		return img;
+	}
 
 	public static Texture loadDefaultTexture() {
 
-		final int width = 16, height = 16;
-		final BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-		final int[] pixels = ((DataBufferInt) img.getRaster().getDataBuffer()).getData();
-		for (int i = 0; i < width; i++) {
-
-			for (int j = 0; j < height; j++) {
-
-				pixels[i + j * width] = (i * (256 / width) << 16) + (i / (width / 16) * (j / (height / 16)) / 2 << 8) + j * (256 / height);
-			}
-		}
-		return loadTexture(img);
+		return loadTexture(loadDefaultImage());
 	}
 
-	public static BufferedImage loadImage(final String path) throws IOException {
+	public static BufferedImage loadImage(final String path) {
 
-		final URL url = TextureLoader.class.getResource(path);
-		if (url == null) throw new IOException();
-		return ImageIO.read(url);
+		try {
+
+			final URL url = TextureLoader.class.getResource(path);
+			if (url == null) throw new IOException();
+			return ImageIO.read(url);
+
+		} catch (final IOException e) {
+
+			App.LOGGER.warn("Can't find texture at {}", path);
+		}
+		return loadDefaultImage();
 	}
 
 	public static Texture loadTexture(final BufferedImage image) {
@@ -71,15 +87,6 @@ public class TextureLoader {
 
 	public static Texture loadTexture(final String path) {
 
-		try {
-
-			return loadTexture(loadImage(path));
-
-		} catch (final IOException e) {
-
-			App.LOGGER.warn("Can't find texture at {}", path);
-		}
-
-		return null;
+		return loadTexture(loadImage(path));
 	}
 }
